@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Machining Quiz (Randomized)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .quiz-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+    }
+    select {
+      padding: 5px;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <h1>Machining Quiz</h1>
+  <p id="question"></p>
+
+  <select id="answerSelect">
+    <option value="">-- Select an answer --</option>
+  </select>
+
+  <div>
+    <button id="submitBtn">Submit</button>
+    <button id="nextBtn" style="display:none;">Next</button>
+  </div>
+
+  <p id="feedback"></p>
+  <p id="score" style="font-weight: bold;"></p>
+</div>
+
+<script>
+  const fullQuizBank = [
+    {
+      question: "Which process is used to create cylindrical shapes?",
+      options: ["Milling", "Turning", "Grinding"],
+      correct: "Turning"
+    },
+    {
+      question: "Which process is typically used to make holes?",
+      options: ["Drilling", "Turning", "Welding"],
+      correct: "Drilling"
+    },
+    {
+      question: "Which process smooths the surface of metal?",
+      options: ["Grinding", "Turning", "Casting"],
+      correct: "Grinding"
+    },
+    {
+      question: "What is the main cutting tool in a milling machine?",
+      options: ["Drill bit", "End mill", "Lathe tool"],
+      correct: "End mill"
+    },
+    {
+      question: "What type of machine is used for turning?",
+      options: ["Lathe", "Mill", "Drill press"],
+      correct: "Lathe"
+    },
+    {
+      question: "Which of these processes removes material by abrasion?",
+      options: ["Casting", "Forging", "Grinding"],
+      correct: "Grinding"
+    }
+  ];
+
+  // Randomly select 3 unique questions
+  function getRandomQuestions(num, questions) {
+    const shuffled = [...questions].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, num);
+  }
+
+  const selectedQuestions = getRandomQuestions(3, fullQuizBank);
+  let currentQuestion = 0;
+  let score = 0;
+
+  const questionEl = document.getElementById("question");
+  const answerSelect = document.getElementById("answerSelect");
+  const submitBtn = document.getElementById("submitBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const feedback = document.getElementById("feedback");
+  const scoreEl = document.getElementById("score");
+
+  function loadQuestion() {
+    feedback.textContent = "";
+    scoreEl.textContent = "";
+
+    const q = selectedQuestions[currentQuestion];
+    questionEl.textContent = q.question;
+
+    answerSelect.innerHTML = '<option value="">-- Select an answer --</option>';
+    q.options.forEach(option => {
+      const opt = document.createElement("option");
+      opt.value = option;
+      opt.textContent = option;
+      answerSelect.appendChild(opt);
+    });
+
+    submitBtn.style.display = "inline-block";
+    nextBtn.style.display = "none";
+    answerSelect.disabled = false;
+    submitBtn.disabled = false;
+  }
+
+  function checkAnswer() {
+    const selected = answerSelect.value;
+    if (!selected) {
+      feedback.textContent = "❗ Please select an answer.";
+      return;
+    }
+
+    answerSelect.disabled = true;
+    submitBtn.disabled = true;
+
+    const q = selectedQuestions[currentQuestion];
+    if (selected === q.correct) {
+      feedback.textContent = "✅ Correct!";
+      score++;
+    } else {
+      feedback.textContent = `❌ Incorrect. The correct answer is: ${q.correct}`;
+    }
+
+    if (currentQuestion < selectedQuestions.length - 1) {
+      nextBtn.style.display = "inline-block";
+    } else {
+      scoreEl.textContent = `✅ Quiz Complete! Your score: ${score} out of ${selectedQuestions.length}`;
+    }
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    loadQuestion();
+  }
+
+  submitBtn.addEventListener("click", checkAnswer);
+  nextBtn.addEventListener("click", nextQuestion);
+
+  loadQuestion();
+</script>
+
+</body>
+</html>
